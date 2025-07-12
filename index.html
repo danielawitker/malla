@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Malla Ingeniería Civil Industrial</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+    }
+    .ramo {
+      margin: 10px 0;
+    }
+    .ramo input[type="checkbox"]:disabled + label {
+      color: gray;
+    }
+    .ramo input[type="checkbox"]:checked + label {
+      text-decoration: line-through;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Malla Interactiva - Ingeniería Civil Industrial</h1>
+
+  <h2>Año 1 - Primer Semestre</h2>
+  <div class="ramo"><input type="checkbox" id="1"><label for="1">Álgebra e Introducción al Cálculo</label></div>
+  <div class="ramo"><input type="checkbox" id="2"><label for="2">Fundamentos de Química</label></div>
+  <div class="ramo"><input type="checkbox" id="3"><label for="3">Programación</label></div>
+  <div class="ramo"><input type="checkbox" id="4"><label for="4">Bases para el Estudio de la Ingeniería</label></div>
+  <div class="ramo"><input type="checkbox" id="5"><label for="5">Taller de Proyectos de Ingeniería</label></div>
+  <div class="ramo"><input type="checkbox" id="6"><label for="6">Teología I</label></div>
+  <div class="ramo"><input type="checkbox" id="7"><label for="7">Antropología Filosófica</label></div>
+
+  <h2>Año 1 - Segundo Semestre</h2>
+  <div class="ramo"><input type="checkbox" id="8" disabled><label for="8">Álgebra Lineal (req: 1, 4, 3)</label></div>
+  <div class="ramo"><input type="checkbox" id="9" disabled><label for="9">Cálculo I (req: 1, 4)</label></div>
+  <div class="ramo"><input type="checkbox" id="10" disabled><label for="10">Introducción a la Mecánica (req: 1)</label></div>
+  <div class="ramo"><input type="checkbox" id="11" disabled><label for="11">Biología de los Microorganismos (req: 4)</label></div>
+  <div class="ramo"><input type="checkbox" id="12" disabled><label for="12">Teología II (req: 6)</label></div>
+  <div class="ramo"><input type="checkbox" id="13" disabled><label for="13">Optativo Arte/Literatura o Historia</label></div>
+
+  <script>
+    const requisitos = {
+      8: [1, 4, 3],
+      9: [1, 4],
+      10: [1],
+      11: [4],
+      12: [6],
+      13: [] // Sin requisitos
+    };
+
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+    // Cargar estado desde localStorage al iniciar
+    window.addEventListener('DOMContentLoaded', () => {
+      checkboxes.forEach(checkbox => {
+        const checked = localStorage.getItem('ramo_' + checkbox.id) === 'true';
+        checkbox.checked = checked;
+      });
+      // Activar/desactivar según requisitos
+      for (let id in requisitos) {
+        const reqs = requisitos[id];
+        const habilitar = reqs.every(r => document.getElementById(r).checked);
+        const ramo = document.getElementById(id);
+        if (ramo && habilitar) {
+          ramo.disabled = false;
+        }
+      }
+    });
+
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', () => {
+        // Guardar estado en localStorage
+        localStorage.setItem('ramo_' + checkbox.id, checkbox.checked);
+
+        // Activar/desactivar según requisitos
+        for (let id in requisitos) {
+          const reqs = requisitos[id];
+          const habilitar = reqs.every(r => document.getElementById(r).checked);
+          const ramo = document.getElementById(id);
+          if (ramo && ramo.disabled && habilitar) {
+            ramo.disabled = false;
+          }
+          // Si se desmarca un requisito, volver a desactivar y desmarcar los ramos dependientes
+          if (ramo && !habilitar) {
+            ramo.checked = false;
+            ramo.disabled = true;
+            localStorage.setItem('ramo_' + id, false);
+          }
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
